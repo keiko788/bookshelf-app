@@ -29,7 +29,7 @@ class ApiBookUpdateRequest extends FormRequest
             'author' => 'required|string|max:255',
             'isbn' => [
                 'required',
-                'regex:/^\d{13}$',
+                'regex:/^\d{13}$/',
                 Rule::unique('books', 'isbn')->ignore($this->book),
             ],
             'published_date' => 'required|date',

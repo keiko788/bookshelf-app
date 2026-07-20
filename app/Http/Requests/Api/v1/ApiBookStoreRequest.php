@@ -26,12 +26,12 @@ class ApiBookStoreRequest extends FormRequest
             'user_id' => 'required|integer|exists:users,id',
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
-            'isbn' => 'required|regex:/^\d{13}$|unique:books,isbn',
+            'isbn' => 'required|regex:/^\d{13}$/|unique:books,isbn',
             'published_date' => 'required|date',
             'description' => 'nullable|string',
             'image_url' => 'nullable|url|max:255',
-            'genre_ids' => 'required|array|min:1',
-            'genre_ids.*' => 'integer|exists:genres,id',
+            'genres' => 'required|array|min:1',
+            'genres.*' => 'integer|exists:genres,id',
         ];
     }
 
@@ -55,11 +55,11 @@ class ApiBookStoreRequest extends FormRequest
             'description.string' => '説明は文字列で入力してください',
             'image_url.url' => '画像URLは有効なURLで入力してください',
             'image_url.max' => '画像URLは255文字以内で入力してください',
-            'genre_ids.required' => 'ジャンルを選択してください',
-            'genre_ids.array' => 'ジャンルの指定が正しくありません',
-            'genre_ids.min' => 'ジャンルを1つ以上選択してください',
-            'genre_ids.*.integer' => 'ジャンルIDは整数で入力してください',
-            'genre_ids.*.exists' => '選択されたジャンルが存在しません',
+            'genres.required' => 'ジャンルを選択してください',
+            'genres.array' => 'ジャンルの指定が正しくありません',
+            'genres.min' => 'ジャンルを1つ以上選択してください',
+            'genres.*.integer' => 'ジャンルIDは整数で入力してください',
+            'genres.*.exists' => '選択されたジャンルが存在しません',
         ];
     }
 }
