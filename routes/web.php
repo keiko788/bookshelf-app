@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\FavoriteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,13 +39,11 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::resource('books', BookController::class)->except(['index', 'show']);
-    // お気に入り一覧画面
-    Route::get('/favorites', function () {
-        return view('favorites.index');
-    })->name('favorites.index');
-    Route::post('/favorites', function () {
-        return view('books.show');
-    })->name('favorites.toggle');
+
+    // お気に入り
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::post('/books/{book}/favorites', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+
     // レビュー関連
     Route::post('/reviews', function () {
         return view('books.store');
