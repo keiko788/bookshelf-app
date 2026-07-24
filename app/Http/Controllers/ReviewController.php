@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\ReviewStoreRequest;
-use App\Models\Review;
-use App\Models\Book;
 use App\Http\Requests\ReviewUpdateRequest;
+use App\Models\Book;
+use App\Models\Review;
 
 class ReviewController extends Controller
 {
-    //レビューを投稿する
+    // レビューを投稿する
     public function store(ReviewStoreRequest $request, Book $book)
     {
         $user = auth()->user();
@@ -24,8 +23,8 @@ class ReviewController extends Controller
         if ($exists) {
             return back()
                 ->withErrors([
-                    'comment' => 'この書籍には既にレビューを投稿しています'
-                    ])
+                    'comment' => 'この書籍には既にレビューを投稿しています',
+                ])
                 ->withInput();
         }
 

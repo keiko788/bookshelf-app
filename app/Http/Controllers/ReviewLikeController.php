@@ -6,7 +6,7 @@ use App\Models\Review;
 
 class ReviewLikeController extends Controller
 {
-    //レビューいいねの登録・解除
+    // レビューいいねの登録・解除
     public function toggle(Review $review)
     {
         $user = auth()->user();
