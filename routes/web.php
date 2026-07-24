@@ -4,6 +4,7 @@ use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GenreController;
+use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewLikeController;
 use Illuminate\Support\Facades\Route;
@@ -27,9 +28,7 @@ Route::get('/', function () {
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
 
 // ランキング画面
-Route::get('/ranking', function () {
-    return view('ranking.index');
-})->name('ranking.index');
+Route::get('/ranking', [RankingController::class, 'index'])->name('ranking.index');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
