@@ -3,6 +3,8 @@
 use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ReviewLikeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,18 +47,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/books/{book}/favorites', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
     // レビュー関連
-    Route::post('/reviews', function () {
-        return view('books.store');
-    })->name('reviews.store');
-    Route::post('/reviews/like', function () {
-        return view('books.store');
-    })->name('reviews.like');
-    Route::get('/reviews', function () {
-        return view('reviews.edit');
-    })->name('reviews.edit');
-    Route::delete('/reviews', function () {
-        return view('books.show');
-    })->name('reviews.destroy');
+    Route::post('/books/{book}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])->name('reviews.edit');
+    Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    Route::post('/reviews/{review}/like', [ReviewLikeController::class, 'toggle'])->name('reviews.like');
 
     // ジャンル一覧画面
     Route::get('/genres', function () {

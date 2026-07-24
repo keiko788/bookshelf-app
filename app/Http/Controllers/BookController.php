@@ -65,7 +65,15 @@ class BookController extends Controller
         $book->load([
             'genres',
             'reviews.user',
+            'reviews.likedByUsers',
         ]);
+
+        if (auth()->check()) {
+            auth()->user()->load([
+                'favoriteBooks',
+                'likedReviews',
+            ]);
+        }
 
         return view('books.show', compact('book'));
     }
