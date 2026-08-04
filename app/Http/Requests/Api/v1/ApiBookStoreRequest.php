@@ -12,7 +12,7 @@ class ApiBookStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -38,28 +38,28 @@ class ApiBookStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'user_id.required' => '登録者IDを指定してください',
-            'user_id.integer' => '登録者IDは整数で入力してください',
-            'user_id.exists' => '指定された登録者IDが存在しません',
-            'title.required' => 'タイトルを入力してください',
-            'title.string' => 'タイトルは文字列で入力してください',
-            'title.max' => 'タイトルは255文字以内で入力してください',
-            'author.required' => '著者名を入力してください',
-            'author.string' => '著者名は文字列で入力してください',
-            'author.max' => '著者名は255文字以内で入力してください',
-            'isbn.required' => 'ISBNを入力してください',
-            'isbn.regex' => 'ISBNは13桁で入力してください',
-            'isbn.unique' => 'このISBNは既に登録されています',
-            'published_date.required' => '出版日を入力してください',
-            'published_date.date' => '出版日は有効な日付で入力してください',
-            'description.string' => '説明は文字列で入力してください',
-            'image_url.url' => '画像URLは有効なURLで入力してください',
-            'image_url.max' => '画像URLは255文字以内で入力してください',
-            'genres.required' => 'ジャンルを選択してください',
-            'genres.array' => 'ジャンルの指定が正しくありません',
-            'genres.min' => 'ジャンルを1つ以上選択してください',
-            'genres.*.integer' => 'ジャンルIDは整数で入力してください',
-            'genres.*.exists' => '選択されたジャンルが存在しません',
+            'user_id.required' => '登録者IDを指定してください。',
+            'user_id.integer' => '登録者IDは整数で入力してください。',
+            'user_id.exists' => '指定された登録者IDが存在しません。',
+            'title.required' => 'タイトルを入力してください。',
+            'title.string' => 'タイトルは文字列で入力してください。',
+            'title.max' => 'タイトルは255文字以内で入力してください。',
+            'author.required' => '著者名を入力してください。',
+            'author.string' => '著者名は文字列で入力してください。',
+            'author.max' => '著者名は255文字以内で入力してください。',
+            'isbn.required' => 'ISBNを入力してください。',
+            'isbn.regex' => 'ISBNは13桁で入力してください。',
+            'isbn.unique' => 'このISBNは既に登録されています。',
+            'published_date.required' => '出版日を入力してください。',
+            'published_date.date' => '出版日は有効な日付で入力してください。',
+            'description.string' => '説明は文字列で入力してください。',
+            'image_url.url' => '画像URLは有効なURLで入力してください。',
+            'image_url.max' => '画像URLは255文字以内で入力してください。',
+            'genres.required' => 'ジャンルを選択してください。',
+            'genres.array' => 'ジャンルは配列で入力してください。',
+            'genres.min' => 'ジャンルを1つ以上選択してください。',
+            'genres.*.integer' => 'ジャンルIDは整数で入力してください。',
+            'genres.*.exists' => '選択されたジャンルが存在しません。',
         ];
     }
 }

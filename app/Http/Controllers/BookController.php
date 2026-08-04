@@ -40,8 +40,7 @@ class BookController extends Controller
         $user = auth()->user();
         $validated = $request->validated();
 
-        $book = Book::create([
-            'user_id' => $user->id,
+        $book = $user->books()->create([
             'title' => $validated['title'],
             'author' => $validated['author'],
             'isbn' => $validated['isbn'],
