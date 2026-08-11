@@ -83,7 +83,7 @@ class GenreController extends Controller
     {
         if ($genre->books()->exists()) {
             return back()
-                ->with('error', '書籍に紐付いているジャンルは削除できません');
+                ->with('error', '書籍に紐付いているジャンルは削除できません。');
         }
 
         $genre->delete();

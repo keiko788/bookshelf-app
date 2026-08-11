@@ -36,7 +36,7 @@ class ReviewController extends Controller
         ]);
 
         return redirect()
-            ->route('books.show')
+            ->route('books.show', $book)
             ->with('success', 'レビューを投稿しました');
     }
 

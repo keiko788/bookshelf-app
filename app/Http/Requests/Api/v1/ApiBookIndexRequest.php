@@ -35,11 +35,11 @@ class ApiBookIndexRequest extends FormRequest
         return [
             'keyword.string' => 'キーワードは文字列で入力してください。',
             'keyword.max' => 'キーワードは255文字以内で入力してください。',
-            'genre_id.integer' => 'ジャンルの指定が正しくありません。',
+            'genre_id.integer' => 'ジャンルIDは整数で入力してください。',
             'genre_id.exists' => '選択されたジャンルが存在しません。',
             'page.integer' => 'ページ番号は整数で入力してください。',
             'page.min' => 'ページ番号は1以上で入力してください。',
-            'per_page.required' => '表示件数は整数で入力してください。',
+            'per_page.integer' => '表示件数は整数で入力してください。',
             'per_page.min' => '表示件数は1以上で入力してください。',
             'per_page.max' => '表示件数は100以下で入力してください。',
         ];

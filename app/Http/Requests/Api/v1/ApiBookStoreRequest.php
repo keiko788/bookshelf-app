@@ -38,7 +38,7 @@ class ApiBookStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'user_id.required' => '登録者IDを指定してください。',
+            'user_id.required' => '登録者IDを入力してください。',
             'user_id.integer' => '登録者IDは整数で入力してください。',
             'user_id.exists' => '指定された登録者IDが存在しません。',
             'title.required' => 'タイトルを入力してください。',
