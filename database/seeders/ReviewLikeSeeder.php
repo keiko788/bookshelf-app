@@ -82,16 +82,16 @@ class ReviewLikeSeeder extends Seeder
         $userIds = User::pluck('id', 'email');
         $reviewIds = Review::pluck('id', 'comment');
 
-        foreach ($likes as $email => $comments) {
-            $likedReviewIds = [];
+        collect($likes)->each(function ($comments, $email) use ($userIds, $reviewIds) {
 
-            foreach ($comments as $comment) {
-                $likedReviewIds[] = $reviewIds[$comment];
-            }
+            $likedReviewIds = collect($comments)->map(function ($comment) use ($reviewIds) {
+                return $reviewIds[$comment];
+            });
 
             $user = User::find($userIds[$email]);
 
             $user->likedReviews()->syncWithoutDetaching($likedReviewIds);
-        }
+        });
+
     }
 }

@@ -212,13 +212,13 @@ class ReviewSeeder extends Seeder
         $users = User::pluck('id', 'email');
         $books = Book::pluck('id', 'isbn');
 
-        foreach ($reviews as $review) {
+        collect($reviews)->each(function ($review) use ($users, $books) {
             Review::create([
                 'user_id' => $users[$review['user_email']],
                 'book_id' => $books[$review['isbn']],
                 'rating' => $review['rating'],
                 'comment' => $review['comment'],
             ]);
-        }
+        });
     }
 }

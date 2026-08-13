@@ -25,10 +25,11 @@ class GenreSeeder extends Seeder
             '旅行',
         ];
 
-        foreach ($genres as $genre) {
+        collect($genres)->each(function ($genre) {
             Genre::firstOrCreate([
                 'name' => $genre,
             ]);
-        }
+        });
+
     }
 }

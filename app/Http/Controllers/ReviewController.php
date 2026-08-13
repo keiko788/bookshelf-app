@@ -6,11 +6,19 @@ use App\Http\Requests\ReviewStoreRequest;
 use App\Http\Requests\ReviewUpdateRequest;
 use App\Models\Book;
 use App\Models\Review;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ReviewController extends Controller
 {
-    // レビューを投稿する
-    public function store(ReviewStoreRequest $request, Book $book)
+    /**
+     * レビューを投稿する。
+     *
+     * @param  ReviewStoreRequest  $request  レビュー投稿用のリクエスト
+     * @param  Book  $book  レビューを投稿する書籍
+     * @return RedirectResponse 直前の画面または書籍詳細画面へリダイレクト
+     */
+    public function store(ReviewStoreRequest $request, Book $book): RedirectResponse
     {
         $user = auth()->user();
         $validated = $request->validated();
@@ -40,8 +48,13 @@ class ReviewController extends Controller
             ->with('success', 'レビューを投稿しました');
     }
 
-    // レビュー編集画面を表示
-    public function edit(Review $review)
+    /**
+     * レビュー編集画面を表示する。
+     *
+     * @param  Review  $review  編集するレビュー
+     * @return View レビュー編集画面
+     */
+    public function edit(Review $review): View
     {
         $this->authorize('update', $review);
 
@@ -50,8 +63,13 @@ class ReviewController extends Controller
         return view('reviews.edit', compact('review'));
     }
 
-    // レビューを更新する
-    public function update(ReviewUpdateRequest $request, Review $review)
+    /**
+     * レビューを更新する。
+     *
+     * @param  ReviewUpdateRequest  $request  レビュー更新用のリクエスト
+     * @return RedirectResponse 書籍詳細画面へリダイレクト
+     */
+    public function update(ReviewUpdateRequest $request, Review $review): RedirectResponse
     {
         $this->authorize('update', $review);
 
@@ -66,8 +84,13 @@ class ReviewController extends Controller
             ->with('success', 'レビュー更新しました');
     }
 
-    // レビューを削除する
-    public function destroy(Review $review)
+    /**
+     * レビューを削除する。
+     *
+     * @param  Review  $review  削除するレビュー
+     * @return RedirectResponse 書籍詳細画面へリダイレクト
+     */
+    public function destroy(Review $review): RedirectResponse
     {
         $this->authorize('delete', $review);
 

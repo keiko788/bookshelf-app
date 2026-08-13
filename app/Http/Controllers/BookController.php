@@ -6,13 +6,17 @@ use App\Http\Requests\BookStoreRequest;
 use App\Http\Requests\BookUpdateRequest;
 use App\Models\Book;
 use App\Models\Genre;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class BookController extends Controller
 {
     /**
-     * 書籍一覧画面を表示
+     * 書籍一覧画面を表示する。
+     *
+     * @return View 書籍一覧画面
      */
-    public function index()
+    public function index(): View
     {
         $books = Book::with('genres')
             ->withAvg('reviews', 'rating')
@@ -23,9 +27,11 @@ class BookController extends Controller
     }
 
     /**
-     * 書籍登録画面を表示
+     * 書籍登録画面を表示する
+     *
+     * @return View 書籍登録画面
      */
-    public function create()
+    public function create(): View
     {
         $genres = Genre::all();
 
@@ -33,9 +39,12 @@ class BookController extends Controller
     }
 
     /**
-     * 書籍を追加
+     * 書籍を登録する。
+     *
+     * @param  BookStoreRequest  $request  書籍登録用のリクエスト
+     * @return RedirectResponse 書籍一覧画面へリダイレクト
      */
-    public function store(BookStoreRequest $request)
+    public function store(BookStoreRequest $request): RedirectResponse
     {
         $user = auth()->user();
         $validated = $request->validated();
@@ -57,9 +66,12 @@ class BookController extends Controller
     }
 
     /**
-     * 書籍詳細画面を表示
+     * 書籍詳細画面を表示する。
+     *
+     * @param  Book  $book  表示する書籍
+     * @return View 書籍詳細画面
      */
-    public function show(Book $book)
+    public function show(Book $book): View
     {
         $book->load([
             'genres',
@@ -78,9 +90,12 @@ class BookController extends Controller
     }
 
     /**
-     * 書籍編集画面を表示
+     * 書籍編集画面を表示する。
+     *
+     * @param  Book  $book  編集する書籍
+     * @return View 書籍編集画面
      */
-    public function edit(Book $book)
+    public function edit(Book $book): View
     {
         $this->authorize('update', $book);
 
@@ -92,9 +107,13 @@ class BookController extends Controller
     }
 
     /**
-     * 書籍を更新する
+     * 書籍を更新する。
+     *
+     * @param  BookUpdateRequest  $request  書籍更新用のリクエスト
+     * @param  Book  $book  更新する書籍
+     * @return RedirectResponse 書籍詳細画面へリダイレクト
      */
-    public function update(BookUpdateRequest $request, Book $book)
+    public function update(BookUpdateRequest $request, Book $book): RedirectResponse
     {
         $this->authorize('update', $book);
 
@@ -117,9 +136,12 @@ class BookController extends Controller
     }
 
     /**
-     * 書籍を削除
+     * 書籍を削除する。
+     *
+     * @param  Book  $book  削除する書籍
+     * @return RedirectResponse 書籍一覧画面へリダイレクト
      */
-    public function destroy(Book $book)
+    public function destroy(Book $book): RedirectResponse
     {
         $this->authorize('delete', $book);
 

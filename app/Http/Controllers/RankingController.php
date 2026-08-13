@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use Illuminate\View\View;
 
 class RankingController extends Controller
 {
-    // ランキング画面を表示
+    /**
+     * ランキング画面を表示する。
+     *
+     * @return View ランキング一覧画面
+     */
     public function index()
     {
         $rankedBooks = Book::withCount('reviews')

@@ -41,10 +41,10 @@ class UserSeeder extends Seeder
             ],
         ];
 
-        foreach ($users as $user) {
+        collect($users)->each(function ($user) {
             User::firstOrCreate([
                 'email' => $user['email'],
             ], $user);
-        }
+        });
     }
 }

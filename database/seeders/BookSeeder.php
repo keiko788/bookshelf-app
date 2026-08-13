@@ -120,8 +120,7 @@ class BookSeeder extends Seeder
 
         $genres = Genre::pluck('id', 'name');
 
-        foreach ($books as $bookData) {
-
+        collect($books)->each(function ($bookData) use ($genres, $user) {
             $genreNames = $bookData['genre_names'];
 
             unset($bookData['genre_names']);
@@ -134,13 +133,13 @@ class BookSeeder extends Seeder
                 )
             );
 
-            $genreIds = [];
-
-            foreach ($genreNames as $genreName) {
-                $genreIds[] = $genres[$genreName];
-            }
+            $genreIds = collect($genreNames)
+                ->map(function ($genreName) use ($genres) {
+                    return $genres[$genreName];
+                });
 
             $book->genres()->sync($genreIds);
-        }
+        });
+
     }
 }

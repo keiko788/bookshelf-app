@@ -45,32 +45,62 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    /**
+     * ユーザーが登録した書籍とのリレーションを取得する。
+     *
+     * @return HasMany 書籍とのリレーション
+     */
     public function books(): HasMany
     {
         return $this->hasMany(Book::class);
     }
 
+    /**
+     * ユーザーが投稿したレビューとのリレーションを取得する。
+     *
+     * @return HasMany レビューとのリレーション
+     */
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
     }
 
+    /**
+     * ユーザーがレビューに付けたいいねとのリレーションを取得する。
+     *
+     * @return HasMany レビューいいねとのリレーション
+     */
     public function reviewLikes(): HasMany
     {
         return $this->hasMany(ReviewLike::class);
     }
 
+    /**
+     * ユーザーが登録したお気に入リとのリレーションを取得する。
+     *
+     * @return HasMany お気に入りのリレーション
+     */
     public function favorites(): HasMany
     {
         return $this->hasMany(Favorite::class);
     }
 
+    /**
+     * ユーザーがお気に入り登録した書籍とのリレーションを取得する。
+     *
+     * @return BelongsToMany 書籍とのリレーション
+     */
     public function favoriteBooks(): BelongsToMany
     {
         return $this->belongsToMany(Book::class, 'favorites')
             ->withTimestamps();
     }
 
+    /**
+     * ユーザーがいいねをしたレビューとのリレーションを取得する。
+     *
+     * @return BelongsToMany レビューとのリレーション
+     */
     public function likedReviews(): BelongsToMany
     {
         return $this->belongsToMany(Review::class, 'review_likes')

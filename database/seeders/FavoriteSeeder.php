@@ -53,16 +53,17 @@ class FavoriteSeeder extends Seeder
         $userIds = User::pluck('id', 'email');
         $bookIds = Book::pluck('id', 'isbn');
 
-        foreach ($favorites as $email => $isbns) {
-            $favoriteBookIds = [];
-
-            foreach ($isbns as $isbn) {
-                $favoriteBookIds[] = $bookIds[$isbn];
-            }
+        collect($favorites)->each(function ($isbns, $email) use ($userIds, $bookIds) {
+            $favoriteBookIds = collect($isbns)
+                ->map(function ($isbn) use ($bookIds) {
+                    return $bookIds[$isbn];
+                });
 
             $user = User::find($userIds[$email]);
 
-            $user->favoriteBooks()->syncWithoutDetaching($favoriteBookIds);
-        }
+            $user->favoriteBooks()
+                ->syncWithoutDetaching($favoriteBookIds);
+        });
+
     }
 }

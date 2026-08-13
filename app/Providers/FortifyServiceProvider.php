@@ -21,7 +21,7 @@ class FortifyServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Fortifyのユーザー登録処理とログイン試行回数制限を設定する。
      */
     public function boot(): void
     {

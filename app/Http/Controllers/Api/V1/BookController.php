@@ -10,13 +10,18 @@ use App\Http\Resources\Api\V1\BookDetailResource;
 use App\Http\Resources\Api\V1\BookIndexResource;
 use App\Http\Resources\Api\V1\BookResource;
 use App\Models\Book;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class BookController extends Controller
 {
     /**
-     * 書籍一覧を取得する
+     * 書籍一覧を取得する。
+     *
+     * @param  ApiBookIndexRequest  $request  書籍一覧取得用のリクエスト
+     * @return AnonymousResourceCollection 書籍一覧のリソースコレクション
      */
-    public function index(ApiBookIndexRequest $request)
+    public function index(ApiBookIndexRequest $request): AnonymousResourceCollection
     {
         $query = Book::with('genres')
             ->withAvg('reviews', 'rating')
@@ -47,9 +52,12 @@ class BookController extends Controller
     }
 
     /**
-     * 書籍を登録する
+     * 書籍を登録する。
+     *
+     * @param  ApiBookStoreRequest  $request  書籍登録用のリクエスト
+     * @return JsonResponse 登録した書籍情報を含むJSONレスポンス
      */
-    public function store(ApiBookStoreRequest $request)
+    public function store(ApiBookStoreRequest $request): JsonResponse
     {
         $validated = $request->validated();
 
@@ -77,9 +85,12 @@ class BookController extends Controller
     }
 
     /**
-     * 書籍詳細を表示する
+     * 書籍詳細を取得する。
+     *
+     * @param  Book  $book  表示する書籍
+     * @return BookDetailResource 書籍詳細リソース
      */
-    public function show(Book $book)
+    public function show(Book $book): BookDetailResource
     {
         $book->load([
             'genres',
@@ -90,9 +101,13 @@ class BookController extends Controller
     }
 
     /**
-     * 書籍を更新する
+     * 書籍を更新する。
+     *
+     * @param  ApiBookUpdateRequest  $request  書籍更新用のリクエスト
+     * @param  Book  $book  更新する書籍
+     * @return BookResource 更新した書籍リソース
      */
-    public function update(ApiBookUpdateRequest $request, Book $book)
+    public function update(ApiBookUpdateRequest $request, Book $book): BookResource
     {
         $validated = $request->validated();
 
@@ -117,7 +132,10 @@ class BookController extends Controller
     }
 
     /**
-     * 書籍を削除する
+     * 書籍を削除する。
+     *
+     * @param  Book  $book  削除する書籍
+     * @return JsonResponse 空のJSONレスポンス
      */
     public function destroy(Book $book)
     {

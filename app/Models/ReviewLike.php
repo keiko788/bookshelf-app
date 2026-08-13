@@ -15,11 +15,21 @@ class ReviewLike extends Model
         'review_id',
     ];
 
+    /**
+     * レビューいいねをしたユーザーとのリレーションを取得する。
+     *
+     * @return BelongsTo ユーザーとのリレーション
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * いいね対象のレビューとのリレーションを取得する。
+     *
+     * @return BelongsTo レビューとのリレーション
+     */
     public function review(): BelongsTo
     {
         return $this->belongsTo(Review::class);

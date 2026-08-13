@@ -3,11 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Review;
+use Illuminate\Http\RedirectResponse;
 
 class ReviewLikeController extends Controller
 {
-    // レビューいいねの登録・解除
-    public function toggle(Review $review)
+    /**
+     * レビューいいねを登録・解除する。
+     *
+     * @param  Review  $review  いいねを登録・解除するレビュー
+     * @return RedirectResponse 直前の画面へリダイレクト
+     */
+    public function toggle(Review $review): RedirectResponse
     {
         $user = auth()->user();
 
