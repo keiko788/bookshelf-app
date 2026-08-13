@@ -72,4 +72,14 @@ class Book extends Model
         return $this->belongsToMany(User::class, 'favorites')
             ->withTimestamps();
     }
+
+    /**
+     * 書籍と紐づく読書計画とのリレーションを取得する。
+     *
+     * @return HasMany 読書計画とのリレーション
+     */
+    public function readingPlans(): HasMany
+    {
+        return $this->hasMany(ReadingPlan::class);
+    }
 }

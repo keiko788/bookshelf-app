@@ -14,7 +14,7 @@ class BookSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::first();
+        $users = User::all();
 
         $books = [
             [
@@ -120,7 +120,7 @@ class BookSeeder extends Seeder
 
         $genres = Genre::pluck('id', 'name');
 
-        collect($books)->each(function ($bookData) use ($genres, $user) {
+        collect($books)->each(function ($bookData) use ($genres, $users) {
             $genreNames = $bookData['genre_names'];
 
             unset($bookData['genre_names']);
@@ -129,7 +129,7 @@ class BookSeeder extends Seeder
                 ['isbn' => $bookData['isbn']],
                 array_merge(
                     $bookData,
-                    ['user_id' => $user->id]
+                    ['user_id' => $users->random()->id]
                 )
             );
 
