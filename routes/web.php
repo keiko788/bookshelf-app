@@ -4,6 +4,7 @@ use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GenreController;
+use App\Http\Controllers\GoogleBooksController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewLikeController;
@@ -42,6 +43,8 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::resource('books', BookController::class)->except(['index', 'show']);
 
+    Route::get('/books/isbn/{isbn}', [GoogleBooksController::class, 'search']);
+
     // お気に入り
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
     Route::post('/books/{book}/favorites', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
@@ -55,6 +58,21 @@ Route::middleware('auth')->group(function () {
 
     // ジャンル関連
     Route::resource('genres', GenreController::class);
+
+    // マイ読書レポート関連
+    Route::get('/reports', function () {
+        return view('reports.index');
+    })->name('reports.index');
+
+    // 読書計画関連
+    Route::get('/reading-plans', function () {
+        return view('reading-plans.index');
+    })->name('reading-plans.index');
+
+    // 通知一覧
+    Route::get('/notifications', function () {
+        return view('notifications.index');
+    })->name('notifications.index');
 });
 
 // 書籍詳細画面

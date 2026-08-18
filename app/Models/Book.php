@@ -22,6 +22,10 @@ class Book extends Model
         'image_url',
     ];
 
+    protected $casts = [
+        'published_date' => 'date',
+    ];
+
     /**
      * 書籍を登録したユーザーとのリレーションを取得する。
      *

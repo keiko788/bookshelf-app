@@ -63,7 +63,7 @@ class BookUpdateTest extends TestCase
         $response->assertSee($this->book->title);
         $response->assertSee($this->book->author);
         $response->assertSee($this->book->isbn);
-        $response->assertSee($this->book->published_date);
+        $response->assertSee($this->book->published_date->format('Y-m-d'));
         $response->assertSee($this->book->description);
         $response->assertSee($this->book->image_url);
         $response->assertSee($this->genre->name);
