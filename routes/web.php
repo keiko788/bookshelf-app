@@ -6,6 +6,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\GoogleBooksController;
 use App\Http\Controllers\RankingController;
+use App\Http\Controllers\ReadingPlanController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewLikeController;
 use Illuminate\Support\Facades\Route;
@@ -65,10 +66,27 @@ Route::middleware('auth')->group(function () {
     })->name('reports.index');
 
     // 読書計画関連
-    Route::get('/reading-plans', function () {
-        return view('reading-plans.index');
-    })->name('reading-plans.index');
+    Route::get('/reading-plans', [ReadingPlanController::class, 'index'])
+        ->name('reading-plans.index');
 
+    Route::get('/reading-plans/create', [ReadingPlanController::class, 'create'])
+        ->name('reading-plans.create');
+
+    Route::post('/reading-plans', [ReadingPlanController::class, 'store'])
+        ->name('reading-plans.store');
+
+    Route::get('/reading-plans/{plan}/edit', [ReadingPlanController::class, 'edit'])
+        ->name('reading-plans.edit');
+
+    Route::put('/reading-plans/{plan}', [ReadingPlanController::class, 'update'])
+        ->name('reading-plans.update');
+
+    Route::delete('/reading-plans/{plan}', [ReadingPlanController::class, 'destroy'])
+        ->name('reading-plans.destroy');
+
+    Route::post('/reading-plans/{plan}/complete', [ReadingPlanController::class, 'complete'])
+        ->name('reading-plans.complete');
+        
     // 通知一覧
     Route::get('/notifications', function () {
         return view('notifications.index');
