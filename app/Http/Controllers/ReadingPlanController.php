@@ -4,19 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Enums\ReadingPlanStatus;
 use App\Http\Requests\ReadingPlanStoreRequest;
+use App\Http\Requests\ReadingPlanUpdateRequest;
+use App\Models\Book;
+use App\Models\ReadingPlan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\ReadingPlanUpdateRequest;
-use App\Models\ReadingPlan;
 use Illuminate\View\View;
-use App\Models\Book;
 
 class ReadingPlanController extends Controller
 {
     /**
      * 読書計画一覧画面を表示する。
      *
-     * @param Request $request ステータスによる絞り込み条件を含むリクエスト
+     * @param  Request  $request  ステータスによる絞り込み条件を含むリクエスト
      * @return View 読書計画一覧画面
      */
     public function index(Request $request): View
@@ -88,7 +88,7 @@ class ReadingPlanController extends Controller
     /**
      * 読書計画編集画面を表示する。
      *
-     * @param  ReadingPlan $plan  編集する読書計画
+     * @param  ReadingPlan  $plan  編集する読書計画
      * @return View 読書計画編集画面
      */
     public function edit(ReadingPlan $plan): View
@@ -163,5 +163,4 @@ class ReadingPlanController extends Controller
             ->route('reading-plans.index')
             ->with('success', '読書計画を読了にしました。');
     }
-
 }

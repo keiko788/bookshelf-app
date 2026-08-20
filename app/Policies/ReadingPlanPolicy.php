@@ -2,18 +2,17 @@
 
 namespace App\Policies;
 
+use App\Enums\ReadingPlanStatus;
 use App\Models\ReadingPlan;
 use App\Models\User;
-use App\Enums\ReadingPlanStatus;
-use Illuminate\Auth\Access\Response;
 
 class ReadingPlanPolicy
 {
     /**
      * 読書計画登録者本人かつ未完了の場合のみ読了を許可する。
      *
-     * @param User $user 読了を行うユーザー
-     * @param ReadingPlan $plan 読了対象の読書計画
+     * @param  User  $user  読了を行うユーザー
+     * @param  ReadingPlan  $plan  読了対象の読書計画
      * @return bool 読了を許可する場合はtrue
      */
     public function complete(User $user, ReadingPlan $plan): bool
@@ -46,5 +45,4 @@ class ReadingPlanPolicy
     {
         return $user->id === $plan->user_id;
     }
-
 }

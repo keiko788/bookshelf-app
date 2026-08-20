@@ -86,7 +86,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/reading-plans/{plan}/complete', [ReadingPlanController::class, 'complete'])
         ->name('reading-plans.complete');
-        
+
     // 通知一覧
     Route::get('/notifications', function () {
         return view('notifications.index');
