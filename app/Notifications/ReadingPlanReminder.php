@@ -50,6 +50,7 @@ class ReadingPlanReminder extends Notification
         };
 
         return [
+            'reading_plan_id' => $this->readingPlan->id,
             'timing' => $this->timing->value,
             'title' => $title,
             'body' => $body,

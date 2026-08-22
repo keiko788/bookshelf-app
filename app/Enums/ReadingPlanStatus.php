@@ -32,7 +32,7 @@ enum ReadingPlanStatus: string
         return match ($this) {
             self::Expired => 'bg-red-100',
             self::InProgress => 'bg-blue-100',
-            self::Completed => 'bg-green-100',
+            self::Completed => 'bg-gray-200',
         };
     }
 }

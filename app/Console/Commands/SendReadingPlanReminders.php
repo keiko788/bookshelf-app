@@ -22,7 +22,33 @@ class SendReadingPlanReminders extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = '読書計画の期限に応じてリマインダー通知を送信する。';
+
+    /**
+     * 未通知の場合に読書計画のリマインダー通知を送信する。
+     *
+     * @param ReadingPlan $readingPlan 通知対象の読書計画
+     * @param ReadingPlanReminderTiming $timing 通知を送るタイミング
+     * @return void
+     */
+    private function sendReminder(
+        ReadingPlan $readingPlan,
+        ReadingPlanReminderTiming $timing
+    ): void {
+        $alreadyNotified = $readingPlan->user
+            ->notifications()
+            ->where('data->reading_plan_id', $readingPlan->id)
+            ->where('data->timing', $timing->value)
+            ->exists();
+
+        if ($alreadyNotified) {
+            return;
+        }
+
+        $readingPlan->user->notify(
+            new ReadingPlanReminder($readingPlan, $timing)
+        );
+    }
 
     /**
      * 読書計画の期限に応じてリマインダー通知を送信する。
@@ -40,12 +66,12 @@ class SendReadingPlanReminders extends Command
             ->get();
 
         $threeDaysBeforePlans->each(function (ReadingPlan $readingPlan): void {
-            $readingPlan->user->notify(
-                new ReadingPlanReminder(
-                    $readingPlan, ReadingPlanReminderTiming::ThreeDaysBefore
-                )
+            $this->sendReminder(
+                $readingPlan,
+                ReadingPlanReminderTiming::ThreeDaysBefore
             );
         });
+
 
         $onDueDatePlans = ReadingPlan::where(
             'status',
@@ -56,10 +82,9 @@ class SendReadingPlanReminders extends Command
             ->get();
 
         $onDueDatePlans->each(function (ReadingPlan $readingPlan): void {
-            $readingPlan->user->notify(
-                new ReadingPlanReminder(
-                    $readingPlan, ReadingPlanReminderTiming::OnDueDate
-                )
+            $this->sendReminder(
+                $readingPlan,
+                ReadingPlanReminderTiming::OnDueDate
             );
         });
 
@@ -72,11 +97,9 @@ class SendReadingPlanReminders extends Command
             ->get();
 
         $threeDaysAfterPlans->each(function (ReadingPlan $readingPlan): void {
-            $readingPlan->user->notify(
-                new ReadingPlanReminder(
-                    $readingPlan,
-                    ReadingPlanReminderTiming::ThreeDaysAfter
-                )
+            $this->sendReminder(
+                $readingPlan,
+                ReadingPlanReminderTiming::ThreeDaysAfter
             );
         });
 
