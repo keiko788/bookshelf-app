@@ -10,6 +10,7 @@ use App\Http\Resources\Api\V1\BookDetailResource;
 use App\Http\Resources\Api\V1\BookIndexResource;
 use App\Http\Resources\Api\V1\BookResource;
 use App\Models\Book;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -61,17 +62,21 @@ class BookController extends Controller
     {
         $validated = $request->validated();
 
-        $book = Book::create([
-            'user_id' => $validated['user_id'],
-            'title' => $validated['title'],
-            'author' => $validated['author'],
-            'isbn' => $validated['isbn'],
-            'published_date' => $validated['published_date'],
-            'description' => $validated['description'] ?? null,
-            'image_url' => $validated['image_url'] ?? null,
-        ]);
+        $book = DB::transaction(function () use ($request, $validated) {
+            $book = Book::create([
+                'user_id' => $request->user()->id,
+                'title' => $validated['title'],
+                'author' => $validated['author'],
+                'isbn' => $validated['isbn'] ?? null,
+                'published_date' => $validated['published_date'] ?? null,
+                'description' => $validated['description'] ?? null,
+                'image_url' => $validated['image_url'] ?? null,
+            ]);
 
-        $book->genres()->sync($validated['genres']);
+            $book->genres()->sync($validated['genres']);
+
+            return $book;
+        });
 
         $book->load('genres');
 
@@ -109,19 +114,22 @@ class BookController extends Controller
      */
     public function update(ApiBookUpdateRequest $request, Book $book): BookResource
     {
+        $this->authorize('update', $book);
+
         $validated = $request->validated();
 
-        $book->update([
-            'user_id' => $validated['user_id'],
-            'title' => $validated['title'],
-            'author' => $validated['author'],
-            'isbn' => $validated['isbn'],
-            'published_date' => $validated['published_date'],
-            'description' => $validated['description'] ?? null,
-            'image_url' => $validated['image_url'] ?? null,
-        ]);
+        DB::transaction(function () use ($book, $validated) {
+            $book->update([
+                'title' => $validated['title'],
+                'author' => $validated['author'],
+                'isbn' => $validated['isbn'] ?? null,
+                'published_date' => $validated['published_date'] ?? null,
+                'description' => $validated['description'] ?? null,
+                'image_url' => $validated['image_url'] ?? null,
+            ]);
 
-        $book->genres()->sync($validated['genres']);
+            $book->genres()->sync($validated['genres']);
+        });
 
         $book->load('genres');
 
@@ -139,6 +147,8 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
+        $this->authorize('delete', $book);
+
         $book->delete();
 
         return response()->json(null, 204);

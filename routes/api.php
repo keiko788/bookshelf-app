@@ -20,5 +20,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->group(function () {
-    Route::apiResource('books', BookController::class);
+    Route::apiResource('books', BookController::class)
+        ->only(['index', 'show']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::apiResource('books', BookController::class)
+            ->only(['store', 'update', 'destroy']);
+    });
 });

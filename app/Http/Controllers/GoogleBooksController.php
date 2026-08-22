@@ -44,7 +44,7 @@ class GoogleBooksController extends Controller
             }
 
             $volumeInfo = $data['items'][0]['volumeInfo'];
-            $authors = implode(', ', $volumeInfo['authors'] ?? []);
+            $authors = implode('・', $volumeInfo['authors'] ?? []);
 
             return response()->json([
                 'title' => $volumeInfo['title'],
