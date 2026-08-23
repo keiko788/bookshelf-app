@@ -10,9 +10,9 @@ use App\Http\Resources\Api\V1\BookDetailResource;
 use App\Http\Resources\Api\V1\BookIndexResource;
 use App\Http\Resources\Api\V1\BookResource;
 use App\Models\Book;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\DB;
 
 class BookController extends Controller
 {
