@@ -27,9 +27,8 @@ class SendReadingPlanReminders extends Command
     /**
      * 未通知の場合に読書計画のリマインダー通知を送信する。
      *
-     * @param ReadingPlan $readingPlan 通知対象の読書計画
-     * @param ReadingPlanReminderTiming $timing 通知を送るタイミング
-     * @return void
+     * @param  ReadingPlan  $readingPlan  通知対象の読書計画
+     * @param  ReadingPlanReminderTiming  $timing  通知を送るタイミング
      */
     private function sendReminder(
         ReadingPlan $readingPlan,
@@ -71,7 +70,6 @@ class SendReadingPlanReminders extends Command
                 ReadingPlanReminderTiming::ThreeDaysBefore
             );
         });
-
 
         $onDueDatePlans = ReadingPlan::where(
             'status',
