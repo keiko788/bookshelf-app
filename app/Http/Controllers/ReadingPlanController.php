@@ -33,7 +33,11 @@ class ReadingPlanController extends Controller
 
         $readingPlans = $query
             ->orderBy('target_date')
-            ->get();
+            ->get()
+            ->sortBy(function (ReadingPlan $readingPlan) {
+                return $readingPlan->status === ReadingPlanStatus::Completed;
+            })
+            ->values();
 
         return view('reading-plans.index', compact('readingPlans', 'currentStatus'));
     }
