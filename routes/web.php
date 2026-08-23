@@ -7,6 +7,7 @@ use App\Http\Controllers\GenreController;
 use App\Http\Controllers\GoogleBooksController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ReadingPlanController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewLikeController;
 use Illuminate\Support\Facades\Route;
@@ -61,9 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('genres', GenreController::class);
 
     // マイ読書レポート関連
-    Route::get('/reports', function () {
-        return view('reports.index');
-    })->name('reports.index');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
     // 読書計画関連
     Route::get('/reading-plans', [ReadingPlanController::class, 'index'])
