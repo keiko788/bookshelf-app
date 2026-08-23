@@ -18,7 +18,12 @@ class ReportController extends Controller
         $user = auth()->user();
 
         $reviews = $user->reviews()
-            ->with('book.genres')
+            ->with([
+                'book' => function ($query) {
+                    $query->withCount('reviews');
+                },
+                'book.genres',
+            ])
             ->get();
 
         $booksRead = $user->readingPlans()
@@ -39,16 +44,18 @@ class ReportController extends Controller
 
         $topRatedBooks = $reviews
             ->where('rating', '>=', 4)
-            ->sortByDesc('rating')
-            ->take(5)
             ->map(function (Review $review) {
                 return [
                     'id' => $review->book->id,
                     'title' => $review->book->title,
                     'author' => $review->book->author,
                     'rating' => $review->rating,
+                    'reviews_count' => $review->book->reviews_count,
                 ];
             })
+            ->sortByDesc('reviews_count')
+            ->sortByDesc('rating')
+            ->take(5)
             ->values();
 
         $genreRatings = $reviews->flatMap(function (Review $review) {
@@ -70,6 +77,7 @@ class ReportController extends Controller
                     'average_rating' => $genreReviews->avg('rating'),
                 ];
             })
+            ->sortByDesc('count')
             ->sortByDesc('average_rating')
             ->take(5)
             ->values();
