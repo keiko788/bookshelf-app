@@ -74,7 +74,7 @@ class BookShowApiTest extends TestCase
         $response->assertJsonPath('data.title', $book->title);
         $response->assertJsonPath('data.author', $book->author);
         $response->assertJsonPath('data.isbn', $book->isbn);
-        $response->assertJsonPath('data.published_date', $book->published_date);
+        $response->assertJsonPath('data.published_date', $book->published_date?->format('Y-m-d'));
 
         $response->assertJsonPath('data.genres.0.id', $genre->id);
         $response->assertJsonPath('data.genres.0.name', $genre->name);

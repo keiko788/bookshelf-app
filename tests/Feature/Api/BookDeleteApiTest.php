@@ -7,7 +7,9 @@ use App\Models\Favorite;
 use App\Models\Genre;
 use App\Models\Review;
 use App\Models\ReviewLike;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class BookDeleteApiTest extends TestCase
@@ -17,6 +19,8 @@ class BookDeleteApiTest extends TestCase
     public function test_書籍を削除すると_204_を返す(): void
     {
         $book = Book::factory()->create();
+
+        Sanctum::actingAs($book->user);
 
         $response = $this->deleteJson("/api/v1/books/{$book->id}");
 
@@ -33,6 +37,8 @@ class BookDeleteApiTest extends TestCase
         $genre = Genre::factory()->create();
 
         $book->genres()->attach($genre);
+
+        Sanctum::actingAs($book->user);
 
         $response = $this->deleteJson("/api/v1/books/{$book->id}");
 
@@ -54,6 +60,8 @@ class BookDeleteApiTest extends TestCase
         $reviewLike = ReviewLike::factory()
             ->for($review)
             ->create();
+
+        Sanctum::actingAs($book->user);
 
         $response = $this->deleteJson("/api/v1/books/{$book->id}");
 
@@ -78,6 +86,8 @@ class BookDeleteApiTest extends TestCase
             ->for($book)
             ->create();
 
+        Sanctum::actingAs($book->user);
+
         $response = $this->deleteJson("/api/v1/books/{$book->id}");
 
         $response->assertStatus(204);
@@ -89,6 +99,10 @@ class BookDeleteApiTest extends TestCase
 
     public function test_存在しない書籍_i_dを削除すると_404が返される(): void
     {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
         $response = $this->deleteJson('/api/v1/books/99999');
 
         $response->assertNotFound();
@@ -99,6 +113,10 @@ class BookDeleteApiTest extends TestCase
 
     public function test_不正な形式の書籍_i_dを削除すると_404が返される(): void
     {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
         $response = $this->deleteJson('/api/v1/books/abc');
 
         $response->assertNotFound();

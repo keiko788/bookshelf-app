@@ -241,7 +241,7 @@ class BookCreateTest extends TestCase
         ]);
     }
 
-    public function test_isb_nを未入力で書籍登録した場合_バリデーションメッセージが表示される(): void
+    public function test_isb_nを未入力でも書籍登録ができる(): void
     {
         $user = User::factory()->create();
         $genre = Genre::factory()->create();
@@ -254,14 +254,13 @@ class BookCreateTest extends TestCase
             'genres' => [$genre->id],
         ]);
 
-        $response->assertSessionHasErrors([
-            'isbn' => 'ISBNを入力してください。',
-        ]);
+        $response->assertSessionDoesntHaveErrors('isbn');
+        $response->assertRedirect(route('books.index'));
 
-        $this->assertDatabaseMissing('books', [
+        $this->assertDatabaseHas('books', [
             'user_id' => $user->id,
             'title' => 'テストタイトル',
-            'author' => 'テスト著者',
+            'isbn' => null,
         ]);
     }
 
@@ -337,7 +336,7 @@ class BookCreateTest extends TestCase
         ]);
     }
 
-    public function test_出版日が未入力の場合_バリデーションメッセージが表示される(): void
+    public function test_出版日が未入力でも書籍登録ができる(): void
     {
         $user = User::factory()->create();
         $genre = Genre::factory()->create();
@@ -350,13 +349,13 @@ class BookCreateTest extends TestCase
             'genres' => [$genre->id],
         ]);
 
-        $response->assertSessionHasErrors([
-            'published_date' => '出版日を入力してください。',
-        ]);
+        $response->assertSessionDoesntHaveErrors('published_date');
+        $response->assertRedirect(route('books.index'));
 
-        $this->assertDatabaseMissing('books', [
+        $this->assertDatabaseHas('books', [
             'user_id' => $user->id,
             'isbn' => '9780123456789',
+            'published_date' => null,
         ]);
     }
 

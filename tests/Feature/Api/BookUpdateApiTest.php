@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class BookUpdateApiTest extends TestCase
@@ -23,6 +24,9 @@ class BookUpdateApiTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
+
+        Sanctum::actingAs($this->user);
+
         $this->genre = Genre::factory()->create([
             'name' => '更新前ジャンル',
         ]);
@@ -37,7 +41,6 @@ class BookUpdateApiTest extends TestCase
     private function validData(array $overrides = []): array
     {
         return array_merge([
-            'user_id' => $this->user->id,
             'title' => 'API更新後タイトル',
             'author' => 'API更新後著者',
             'isbn' => '9781111111111',
@@ -130,73 +133,6 @@ class BookUpdateApiTest extends TestCase
         $this->assertDatabaseMissing('book_genre', [
             'book_id' => $this->book->id,
             'genre_id' => $this->genre->id,
-        ]);
-    }
-
-    public function test_user_idが未指定の場合_バリデーションメッセージが表示される(): void
-    {
-        $data = $this->validData();
-
-        unset($data['user_id']);
-
-        $response = $this->putJson("/api/v1/books/{$this->book->id}", $data);
-
-        $response->assertStatus(422);
-        $response->assertJsonPath(
-            'errors.user_id.0',
-            '登録者IDを入力してください。'
-        );
-
-        $this->assertDatabaseHas('books', [
-            'id' => $this->book->id,
-            'user_id' => $this->user->id,
-            'title' => $this->book->title,
-        ]);
-    }
-
-    public function test_user_idに整数以外の数値を指定した場合_バリデーションメッセージが表示される(): void
-    {
-        $response = $this->putJson(
-            "/api/v1/books/{$this->book->id}",
-            $this->validData([
-                'user_id' => 1.5,
-            ])
-        );
-
-        $response->assertStatus(422);
-        $response->assertJsonPath(
-            'errors.user_id.0',
-            '登録者IDは整数で入力してください。'
-        );
-
-        $this->assertDatabaseHas('books', [
-            'id' => $this->book->id,
-            'user_id' => $this->user->id,
-            'title' => $this->book->title,
-        ]);
-    }
-
-    public function test_存在しないuser_idを指定した場合_バリデーションメッセージが表示される(): void
-    {
-        $nonExistentId = $this->user->id + 9999;
-
-        $response = $this->putJson(
-            "/api/v1/books/{$this->book->id}",
-            $this->validData([
-                'user_id' => $nonExistentId,
-            ])
-        );
-
-        $response->assertStatus(422);
-        $response->assertJsonPath(
-            'errors.user_id.0',
-            '指定された登録者IDが存在しません。'
-        );
-
-        $this->assertDatabaseHas('books', [
-            'id' => $this->book->id,
-            'user_id' => $this->user->id,
-            'title' => $this->book->title,
         ]);
     }
 
@@ -368,7 +304,7 @@ class BookUpdateApiTest extends TestCase
         ]);
     }
 
-    public function test_isbnが未指定の場合_バリデーションメッセージが表示される(): void
+    public function test_isbnが未入力でも書籍を更新できる(): void
     {
         $data = $this->validData();
 
@@ -376,16 +312,12 @@ class BookUpdateApiTest extends TestCase
 
         $response = $this->putJson("/api/v1/books/{$this->book->id}", $data);
 
-        $response->assertStatus(422);
-        $response->assertJsonPath(
-            'errors.isbn.0',
-            'ISBNを入力してください。'
-        );
+        $response->assertOk();
 
         $this->assertDatabaseHas('books', [
             'id' => $this->book->id,
             'user_id' => $this->user->id,
-            'isbn' => $this->book->isbn,
+            'isbn' => null,
         ]);
     }
 
@@ -465,7 +397,7 @@ class BookUpdateApiTest extends TestCase
         ]);
     }
 
-    public function test_出版日が未指定の場合_バリデーションメッセージが表示される(): void
+    public function test_出版日が未入力でも書籍を更新できる(): void
     {
         $data = $this->validData();
 
@@ -473,16 +405,12 @@ class BookUpdateApiTest extends TestCase
 
         $response = $this->putJson("/api/v1/books/{$this->book->id}", $data);
 
-        $response->assertStatus(422);
-        $response->assertJsonPath(
-            'errors.published_date.0',
-            '出版日を入力してください。'
-        );
+        $response->assertOk();
 
         $this->assertDatabaseHas('books', [
             'id' => $this->book->id,
             'user_id' => $this->user->id,
-            'published_date' => $this->book->published_date,
+            'published_date' => null,
         ]);
     }
 

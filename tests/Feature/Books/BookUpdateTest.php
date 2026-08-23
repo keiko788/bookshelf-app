@@ -333,7 +333,7 @@ class BookUpdateTest extends TestCase
         ]);
     }
 
-    public function test_isb_nを未入力で書籍更新した場合_バリデーションメッセージが表示される(): void
+    public function test_isbnを未入力でも書籍を更新できる(): void
     {
         $response = $this->actingAs($this->user)->put(
             route('books.update', $this->book),
@@ -342,24 +342,17 @@ class BookUpdateTest extends TestCase
             ])
         );
 
-        $response->assertSessionHasErrors([
-            'isbn' => 'ISBNを入力してください。',
-        ]);
+        $response->assertSessionDoesntHaveErrors('isbn');
+        $response->assertRedirect(route('books.show', $this->book));
 
         $this->assertDatabaseHas('books', [
-            'id' => $this->book->id,
-            'title' => $this->book->title,
-            'author' => $this->book->author,
-            'isbn' => $this->book->isbn,
-        ]);
-
-        $this->assertDatabaseMissing('books', [
-            'id' => $this->book->id,
-            'isbn' => '9782222222222',
+            'user_id' => $this->user->id,
+            'title' => '更新後タイトル',
+            'isbn' => null,
         ]);
     }
 
-    public function test_既に登録済みの_isb_nで書籍更新した場合_バリデーションメッセージが表示される(): void
+    public function test_既に登録済みの_isbnで書籍更新した場合_バリデーションメッセージが表示される(): void
     {
         $oldBook = Book::factory()->create([
             'isbn' => '9780000000000',
@@ -451,7 +444,7 @@ class BookUpdateTest extends TestCase
         ]);
     }
 
-    public function test_出版日が未入力の場合_バリデーションメッセージが表示される(): void
+    public function test_出版日を未入力でも書籍を更新できる(): void
     {
         $response = $this->actingAs($this->user)->put(
             route('books.update', $this->book),
@@ -460,20 +453,13 @@ class BookUpdateTest extends TestCase
             ])
         );
 
-        $response->assertSessionHasErrors([
-            'published_date' => '出版日を入力してください。',
-        ]);
+        $response->assertSessionDoesntHaveErrors('published_date');
+        $response->assertRedirect(route('books.show', $this->book));
 
         $this->assertDatabaseHas('books', [
-            'id' => $this->book->id,
-            'title' => $this->book->title,
-            'author' => $this->book->author,
-            'isbn' => $this->book->isbn,
-        ]);
-
-        $this->assertDatabaseMissing('books', [
-            'id' => $this->book->id,
-            'isbn' => '9782222222222',
+            'user_id' => $this->user->id,
+            'title' => '更新後タイトル',
+            'published_date' => null,
         ]);
     }
 

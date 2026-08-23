@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class BookStoreApiTest extends TestCase
@@ -22,12 +23,13 @@ class BookStoreApiTest extends TestCase
 
         $this->user = User::factory()->create();
         $this->genre = Genre::factory()->create();
+
+        Sanctum::actingAs($this->user);
     }
 
     private function validData(array $overrides = []): array
     {
         return array_merge([
-            'user_id' => $this->user->id,
             'title' => 'API登録タイトル',
             'author' => 'API登録著者',
             'isbn' => '9781111111111',
@@ -94,55 +96,6 @@ class BookStoreApiTest extends TestCase
             'book_id' => $book->id,
             'genre_id' => $this->genre->id,
         ]);
-    }
-
-    public function test_user_idが未指定の場合_バリデーションメッセージが表示される(): void
-    {
-        $data = $this->validData();
-
-        unset($data['user_id']);
-
-        $response = $this->postJson('/api/v1/books', $data);
-
-        $response->assertStatus(422);
-        $response->assertJsonPath(
-            'errors.user_id.0',
-            '登録者IDを入力してください。'
-        );
-    }
-
-    public function test_user_idに整数以外の値を入力した場合_バリデーションメッセージが表示される(): void
-    {
-        $response = $this->postJson(
-            '/api/v1/books',
-            $this->validData([
-                'user_id' => 'aaa',
-            ])
-        );
-
-        $response->assertStatus(422);
-        $response->assertJsonPath(
-            'errors.user_id.0',
-            '登録者IDは整数で入力してください。'
-        );
-    }
-
-    public function test_存在しないuser_idを入力した場合_バリデーションメッセージが表示される(): void
-    {
-        $nonExistentId = $this->user->id + 999;
-
-        $response = $this->postJson(
-            '/api/v1/books',
-            $this->validData([
-                'user_id' => $nonExistentId,
-            ])
-        );
-
-        $response->assertStatus(422);
-        $response->assertJsonPath(
-            'errors.user_id.0',
-            '指定された登録者IDが存在しません。'
-        );
     }
 
     public function test_タイトルが未入力の場合_バリデーションメッセージが表示される(): void
@@ -308,7 +261,7 @@ class BookStoreApiTest extends TestCase
         ]);
     }
 
-    public function test_isbnが未入力の場合_バリデーションメッセージが表示される(): void
+    public function test_isbnが未入力でも書籍を登録できる(): void
     {
         $data = $this->validData();
 
@@ -316,15 +269,18 @@ class BookStoreApiTest extends TestCase
 
         $response = $this->postJson('/api/v1/books', $data);
 
-        $response->assertStatus(422);
-        $response->assertJsonPath(
-            'errors.isbn.0',
-            'ISBNを入力してください。'
-        );
+        $response->assertStatus(201);
+
+        $this->assertDatabaseHas('books', [
+            'title' => $data['title'],
+            'isbn' => null,
+        ]);
+
     }
 
     public function test_isbnが12桁の場合_バリデーションメッセージが表示される(): void
     {
+
         $response = $this->postJson(
             '/api/v1/books',
             $this->validData([
@@ -387,7 +343,7 @@ class BookStoreApiTest extends TestCase
         );
     }
 
-    public function test_出版日が未入力の場合_バリデーションメッセージが表示される(): void
+    public function test_出版日が未入力でも書籍を登録できる(): void
     {
         $data = $this->validData();
 
@@ -395,11 +351,12 @@ class BookStoreApiTest extends TestCase
 
         $response = $this->postJson('/api/v1/books', $data);
 
-        $response->assertStatus(422);
-        $response->assertJsonPath(
-            'errors.published_date.0',
-            '出版日を入力してください。'
-        );
+        $response->assertStatus(201);
+
+        $this->assertDatabaseHas('books', [
+            'title' => $data['title'],
+            'published_date' => null,
+        ]);
     }
 
     public function test_出版日が不正な形式の場合_バリデーションメッセージが表示される(): void
