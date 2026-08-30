@@ -86,4 +86,26 @@ class ReviewLikeTest extends TestCase
             $afterCount
         );
     }
+
+    public function test_自分のレビューにはいいねができない(): void
+    {
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
+
+        $review = Review::factory()
+            ->for($user)
+            ->for($book)
+            ->create();
+
+        $response = $this->actingAs($user)
+            ->from(route('books.show', $book))
+            ->post(route('reviews.like', $review));
+
+        $response->assertRedirect(route('books.show', $book));
+
+        $this->assertDatabaseMissing('review_likes', [
+            'user_id' => $user->id,
+            'review_id' => $review->id,
+        ]);
+    }
 }

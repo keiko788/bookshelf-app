@@ -23,7 +23,7 @@ class GoogleBooksController extends Controller
 
         try {
             $response = Http::timeout(10)
-                ->retry(3, 100)
+                ->retry(3, 100, throw: false)
                 ->get('https://www.googleapis.com/books/v1/volumes', [
                     'q' => "isbn:{$isbn}",
                     'key' => config('services.google_books.key'),

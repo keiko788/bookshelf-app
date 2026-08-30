@@ -3,6 +3,7 @@
 namespace Tests\Feature\Reviews;
 
 use App\Models\Book;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -233,5 +234,28 @@ class ReviewCreateTest extends TestCase
             'book_id' => $this->book->id,
             'comment' => $comment,
         ]);
+    }
+
+    public function test_同じ書籍に複数のレビューを投稿できない(): void
+    {
+        Review::factory()
+            ->for($this->user)
+            ->for($this->book)
+            ->create();
+
+        $response = $this->actingAs($this->user)->post(
+            route('reviews.store', $this->book),
+            $this->validData());
+
+        $response->assertSessionHasErrors([
+            'comment' => 'この書籍には既にレビューを投稿しています',
+        ]);
+
+        $this->assertSame(
+            1,
+            Review::where('user_id', $this->user->id)
+                ->where('book_id', $this->book->id)
+                ->count()
+        );
     }
 }

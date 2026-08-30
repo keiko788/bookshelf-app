@@ -34,11 +34,11 @@ class BookController extends Controller
             });
         }
 
-        $genre = $request->input('genre');
+        $genreId = $request->input('genre');
 
         if ($request->filled('genre')) {
-            $query->whereHas('genres', function ($q) use ($genre) {
-                $q->where('name', $genre);
+            $query->whereHas('genres', function ($q) use ($genreId) {
+                $q->where('genres.id', $genreId);
             });
         }
 

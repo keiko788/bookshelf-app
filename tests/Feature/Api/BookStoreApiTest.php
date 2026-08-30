@@ -23,8 +23,6 @@ class BookStoreApiTest extends TestCase
 
         $this->user = User::factory()->create();
         $this->genre = Genre::factory()->create();
-
-        Sanctum::actingAs($this->user);
     }
 
     private function validData(array $overrides = []): array
@@ -42,6 +40,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_書籍登録時の_jso_nレスポンス構造が正しい(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->postJson(
             '/api/v1/books',
             $this->validData()
@@ -72,6 +72,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_書籍を登録できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->postJson('/api/v1/books', $this->validData());
 
         $response->assertStatus(201);
@@ -100,6 +102,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_タイトルが未入力の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->postJson(
             '/api/v1/books',
             $this->validData([
@@ -116,6 +120,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_タイトルが文字列以外の値で指定された場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->postJson(
             '/api/v1/books',
             $this->validData([
@@ -132,6 +138,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_タイトルが256文字の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $title = str_repeat('あ', 256);
 
         $response = $this->postJson(
@@ -150,6 +158,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_タイトルが255文字の場合_書籍を登録できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $title = str_repeat('あ', 255);
 
         $response = $this->postJson('/api/v1/books', $this->validData([
@@ -166,6 +176,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_タイトルが254文字の場合_書籍を登録できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $title = str_repeat('あ', 254);
 
         $response = $this->postJson('/api/v1/books', $this->validData([
@@ -182,6 +194,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_著者名が未入力の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $data = $this->validData();
 
         unset($data['author']);
@@ -197,6 +211,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_著者名が文字列以外の値で指定された場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->postJson(
             '/api/v1/books',
             $this->validData([
@@ -213,6 +229,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_著者名が256文字の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $author = str_repeat('あ', 256);
 
         $response = $this->postJson(
@@ -231,6 +249,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_著者名が255文字の場合_書籍を登録できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $author = str_repeat('あ', 255);
 
         $response = $this->postJson('/api/v1/books', $this->validData([
@@ -247,6 +267,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_著者名が254文字の場合_書籍を登録できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $author = str_repeat('あ', 254);
 
         $response = $this->postJson('/api/v1/books', $this->validData([
@@ -263,6 +285,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_isbnが未入力でも書籍を登録できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $data = $this->validData();
 
         unset($data['isbn']);
@@ -280,6 +304,7 @@ class BookStoreApiTest extends TestCase
 
     public function test_isbnが12桁の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
 
         $response = $this->postJson(
             '/api/v1/books',
@@ -297,6 +322,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_isbnが13桁の場合_書籍を登録できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->postJson('/api/v1/books', $this->validData([
             'isbn' => '9780123456789',
         ]));
@@ -311,6 +338,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_既に登録済みのisbnを指定した場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         Book::factory()->create([
             'isbn' => '9781111111111',
         ]);
@@ -329,6 +358,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_説明が文字列以外の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->postJson(
             '/api/v1/books',
             $this->validData([
@@ -345,6 +376,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_出版日が未入力でも書籍を登録できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $data = $this->validData();
 
         unset($data['published_date']);
@@ -361,6 +394,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_出版日が不正な形式の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->postJson(
             '/api/v1/books',
             $this->validData([
@@ -377,6 +412,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_画像_ur_lが不正な形式の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->postJson(
             '/api/v1/books',
             $this->validData([
@@ -393,6 +430,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_画像_ur_lが254文字の場合_書籍を登録できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $baseUrl = 'https://example.com/';
         $storeUrl = $baseUrl.str_repeat('a', 234);
 
@@ -410,6 +449,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_画像_ur_lが255文字の場合_書籍を登録できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $baseUrl = 'https://example.com/';
         $storeUrl = $baseUrl.str_repeat('a', 235);
 
@@ -427,6 +468,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_画像_ur_lが256文字の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $baseUrl = 'https://example.com/';
         $storeUrl = $baseUrl.str_repeat('a', 236);
 
@@ -446,6 +489,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_ジャンルが未選択の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $data = $this->validData();
         unset($data['genres']);
 
@@ -460,6 +505,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_ジャンルに整数以外の値を指定した場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->postJson(
             '/api/v1/books',
             $this->validData([
@@ -480,6 +527,8 @@ class BookStoreApiTest extends TestCase
 
     public function test_存在しないジャンルを指定した場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $nonExistentId = [
             $this->genre->id + 999,
         ];
@@ -499,6 +548,18 @@ class BookStoreApiTest extends TestCase
 
         $response->assertJsonFragment([
             '選択されたジャンルが存在しません。',
+        ]);
+    }
+
+    public function test_未認証で書籍を登録すると401が返る(): void
+    {
+        $response = $this->postJson('/api/v1/books', $this->validData());
+
+        $response->assertStatus(401);
+
+        $this->assertDatabaseMissing('books', [
+            'title' => 'Api登録タイトル',
+            'isbn' => '9781111111111',
         ]);
     }
 }

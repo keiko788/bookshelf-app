@@ -28,12 +28,13 @@ Route::get('/', function () {
     return redirect()->route('books.index');
 });
 
-// 書籍一覧画面
+// 書籍
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
 
-// ランキング画面
+// ランキング
 Route::get('/ranking', [RankingController::class, 'index'])->name('ranking.index');
 
+// 認証
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
@@ -44,28 +45,32 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    // 書籍
     Route::resource('books', BookController::class)->except(['index', 'show']);
 
+    // Google Books Api
     Route::get('/books/isbn/{isbn}', [GoogleBooksController::class, 'search']);
 
     // お気に入り
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
     Route::post('/books/{book}/favorites', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
-    // レビュー関連
+    // レビュー
     Route::post('/books/{book}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])->name('reviews.edit');
     Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+
+    // レビューいいね
     Route::post('/reviews/{review}/like', [ReviewLikeController::class, 'toggle'])->name('reviews.like');
 
-    // ジャンル関連
+    // ジャンル
     Route::resource('genres', GenreController::class);
 
-    // マイ読書レポート関連
+    // マイ読書レポート
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
-    // 読書計画関連
+    // 読書計画
     Route::get('/reading-plans', [ReadingPlanController::class, 'index'])
         ->name('reading-plans.index');
 
@@ -87,11 +92,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/reading-plans/{plan}/complete', [ReadingPlanController::class, 'complete'])
         ->name('reading-plans.complete');
 
-    // 通知一覧
+    // 通知
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
     Route::post('/notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
 });
 
-// 書籍詳細画面
+// 書籍詳細
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');

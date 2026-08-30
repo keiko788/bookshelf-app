@@ -4,6 +4,7 @@ namespace Tests\Unit\Models;
 
 use App\Models\Book;
 use App\Models\Favorite;
+use App\Models\ReadingPlan;
 use App\Models\Review;
 use App\Models\ReviewLike;
 use App\Models\User;
@@ -32,11 +33,15 @@ class UserTest extends TestCase
             ->for($user)
             ->for($review)
             ->create();
+        $readingPlan = ReadingPlan::factory()
+            ->for($user)
+            ->create();
 
         $this->assertTrue($user->books->contains($book));
         $this->assertTrue($user->reviews->contains($review));
         $this->assertTrue($user->favorites->contains($favorite));
         $this->assertTrue($user->reviewLikes->contains($reviewLike));
+        $this->assertTrue($user->readingPlans->contains($readingPlan));
     }
 
     public function test_ユーザーの多対多リレーションが正しく定義されている(): void

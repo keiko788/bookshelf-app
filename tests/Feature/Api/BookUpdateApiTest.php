@@ -25,8 +25,6 @@ class BookUpdateApiTest extends TestCase
 
         $this->user = User::factory()->create();
 
-        Sanctum::actingAs($this->user);
-
         $this->genre = Genre::factory()->create([
             'name' => '更新前ジャンル',
         ]);
@@ -53,6 +51,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_書籍更新時の_jso_nレスポンス構造が正しい(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->putJson(
             "/api/v1/books/{$this->book->id}",
             $this->validData()
@@ -83,6 +83,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_書籍を更新できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->putJson("/api/v1/books/{$this->book->id}", $this->validData());
 
         $response->assertOk();
@@ -105,8 +107,33 @@ class BookUpdateApiTest extends TestCase
         ]);
     }
 
+    public function test_書籍の作成者以外は書籍を更新できない(): void
+    {
+        Sanctum::actingAs($this->user);
+
+        $otherUser = User::factory()->create();
+
+        $otherBook = Book::factory()
+            ->for($otherUser)
+            ->create([
+                'title' => '他人の書籍',
+            ]);
+
+        $response = $this->putJson("/api/v1/books/{$otherBook->id}", $this->validData());
+
+        $response->assertForbidden();
+
+        $this->assertDatabaseHas('books', [
+            'id' => $otherBook->id,
+            'user_id' => $otherUser->id,
+            'title' => '他人の書籍',
+        ]);
+    }
+
     public function test_書籍のジャンルを更新できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $newGenre = Genre::factory()->create([
             'name' => 'API更新後ジャンル',
         ]);
@@ -138,6 +165,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_タイトルが未指定の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $data = $this->validData();
 
         unset($data['title']);
@@ -159,6 +188,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_タイトルが256文字の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $newTitle = str_repeat('あ', 256);
 
         $response = $this->putJson(
@@ -183,6 +214,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_タイトルが254文字の場合_書籍を更新できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $newTitle = str_repeat('あ', 254);
 
         $response = $this->putJson("/api/v1/books/{$this->book->id}", $this->validData([
@@ -203,6 +236,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_タイトルが255文字の場合_書籍を更新できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $newTitle = str_repeat('あ', 255);
 
         $response = $this->putJson("/api/v1/books/{$this->book->id}", $this->validData([
@@ -223,6 +258,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_著者名が未指定の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $data = $this->validData();
 
         unset($data['author']);
@@ -244,6 +281,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_著者名が256文字の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $newAuthor = str_repeat('あ', 256);
 
         $response = $this->putJson(
@@ -268,6 +307,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_著者名が254文字の場合_書籍を更新できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $newAuthor = str_repeat('あ', 254);
 
         $response = $this->putJson("/api/v1/books/{$this->book->id}", $this->validData([
@@ -287,6 +328,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_著者名が255文字の場合_書籍を更新できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $newAuthor = str_repeat('あ', 255);
 
         $response = $this->putJson("/api/v1/books/{$this->book->id}", $this->validData([
@@ -306,6 +349,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_isbnが未入力でも書籍を更新できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $data = $this->validData();
 
         unset($data['isbn']);
@@ -323,6 +368,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_isbnが13桁の場合_書籍を更新できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->putJson("/api/v1/books/{$this->book->id}", $this->validData([
             'isbn' => '9780123456789',
         ]));
@@ -340,6 +387,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_isbnが12桁の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->putJson(
             "/api/v1/books/{$this->book->id}",
             $this->validData([
@@ -362,6 +411,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_既に登録済みのisbnを指定した場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         Book::factory()->create([
             'isbn' => '9781111111111',
         ]);
@@ -382,6 +433,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_isbnを変更せずに書籍を更新できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->putJson("/api/v1/books/{$this->book->id}", $this->validData([
             'isbn' => $this->book->isbn,
         ]));
@@ -399,6 +452,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_出版日が未入力でも書籍を更新できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $data = $this->validData();
 
         unset($data['published_date']);
@@ -416,6 +471,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_出版日が不正な形式の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->putJson(
             "/api/v1/books/{$this->book->id}",
             $this->validData([
@@ -438,6 +495,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_画像_ur_lが不正な形式の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $this->book->update([
             'image_url' => 'https://example.com/before.jpg',
         ]);
@@ -464,6 +523,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_画像_ur_lが254文字の場合_書籍を更新できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $baseUrl = 'https://example.com/';
         $updateUrl = $baseUrl.str_repeat('a', 234);
 
@@ -483,6 +544,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_画像_ur_lが255文字の場合_書籍を更新できる(): void
     {
+        Sanctum::actingAs($this->user);
+
         $baseUrl = 'https://example.com/';
         $updateUrl = $baseUrl.str_repeat('a', 235);
 
@@ -502,6 +565,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_画像_ur_lが256文字の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $this->book->update([
             'image_url' => 'https://example.com/before.jpg',
         ]);
@@ -528,6 +593,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_ジャンルが未入力の場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $data = $this->validData();
 
         unset($data['genres']);
@@ -553,6 +620,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_ジャンルに配列以外の値を指定した場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->putJson("/api/v1/books/{$this->book->id}", $this->validData([
             'genres' => 1,
         ]));
@@ -576,6 +645,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_ジャンル_i_dに整数以外の値を指定した場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->putJson("/api/v1/books/{$this->book->id}", $this->validData([
             'genres' => [1.5],
         ]));
@@ -602,6 +673,8 @@ class BookUpdateApiTest extends TestCase
 
     public function test_存在しないジャンル_i_dを指定した場合_バリデーションメッセージが表示される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->putJson("/api/v1/books/{$this->book->id}", $this->validData([
             'genres' => [9999],
         ]));
@@ -628,11 +701,32 @@ class BookUpdateApiTest extends TestCase
 
     public function test_存在しない書籍_i_dを更新した場合_404が返される(): void
     {
+        Sanctum::actingAs($this->user);
+
         $response = $this->putJson('/api/v1/books/9999', $this->validData());
 
         $response->assertNotFound();
         $response->assertExactJson([
             'error' => '書籍が見つかりませんでした。',
+        ]);
+    }
+
+    public function test_未認証で書籍を更新すると401が返る(): void
+    {
+        $response = $this->putJson("/api/v1/books/{$this->book->id}", $this->validData());
+
+        $response->assertStatus(401);
+
+        $this->assertDatabaseHas('books', [
+            'id' => $this->book->id,
+            'title' => $this->book->title,
+            'isbn' => $this->book->isbn,
+        ]);
+
+        $this->assertDatabaseMissing('books', [
+            'id' => $this->book->id,
+            'title' => 'Api更新後タイトル',
+            'isbn' => '9781111111111',
         ]);
     }
 }

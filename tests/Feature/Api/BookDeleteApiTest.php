@@ -30,6 +30,31 @@ class BookDeleteApiTest extends TestCase
         ]);
     }
 
+    public function test_書籍の作成者以外は書籍を削除できない(): void
+    {
+        $user = User::factory()->create();
+
+        $otherUser = User::factory()->create();
+
+        $otherBook = Book::factory()
+            ->for($otherUser)
+            ->create([
+                'title' => '他人の書籍',
+            ]);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->deleteJson("/api/v1/books/{$otherBook->id}");
+
+        $response->assertForbidden();
+
+        $this->assertDatabaseHas('books', [
+            'id' => $otherBook->id,
+            'user_id' => $otherUser->id,
+            'title' => '他人の書籍',
+        ]);
+    }
+
     public function test_書籍を削除すると_ジャンルとの関連データも削除される(): void
     {
         $book = Book::factory()->create();
@@ -122,6 +147,19 @@ class BookDeleteApiTest extends TestCase
         $response->assertNotFound();
         $response->assertExactJson([
             'error' => '書籍が見つかりませんでした。',
+        ]);
+    }
+
+    public function test_未認証で書籍を削除すると_401_を返す(): void
+    {
+        $book = Book::factory()->create();
+
+        $response = $this->deleteJson("/api/v1/books/{$book->id}");
+
+        $response->assertStatus(401);
+
+        $this->assertDatabaseHas('books', [
+            'id' => $book->id,
         ]);
     }
 }

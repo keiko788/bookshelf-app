@@ -44,4 +44,15 @@ class BookShowTest extends TestCase
         $response->assertSee('テストレビュー');
         $response->assertSee('テストユーザー');
     }
+
+    public function test_認証済みユーザーは書籍詳細画面を表示できる(): void
+    {
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->get(route('books.show', $book));
+
+        $response->assertOk();
+    }
 }

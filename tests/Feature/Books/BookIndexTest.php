@@ -148,7 +148,7 @@ class BookIndexTest extends TestCase
         $laravelBook->genres()->attach($technicalGenre);
         $novelBook->genres()->attach($novelGenre);
 
-        $response = $this->get('/books?genre=技術書');
+        $response = $this->get("/books?genre={$technicalGenre->id}");
 
         $response->assertOk();
         $response->assertSee('Laravel入門');
@@ -181,7 +181,7 @@ class BookIndexTest extends TestCase
         $phpBook->genres()->attach($technicalGenre);
         $novelBook->genres()->attach($novelGenre);
 
-        $response = $this->get('/books?keyword=Laravel&genre=技術書');
+        $response = $this->get("/books?keyword=Laravel&genre={$technicalGenre->id}");
 
         $response->assertOk();
         $response->assertSee('Laravel入門');
@@ -203,15 +203,15 @@ class BookIndexTest extends TestCase
             $book->genres()->attach($genre);
         });
 
-        $response = $this->get('/books?keyword=Laravel&genre=技術書');
+        $response = $this->get("/books?keyword=Laravel&genre={$genre->id}");
 
         $response->assertOk();
 
-        $response->assertViewHas('books', function ($books) {
+        $response->assertViewHas('books', function ($books) use ($genre) {
             $nextPageUrl = $books->nextPageUrl();
 
             return str_contains($nextPageUrl, 'keyword=Laravel')
-                && str_contains($nextPageUrl, 'genre=%E6%8A%80%E8%A1%93%E6%9B%B8')
+                && str_contains($nextPageUrl, "genre={$genre->id}")
                 && str_contains($nextPageUrl, 'page=2');
         });
 
@@ -355,6 +355,27 @@ class BookIndexTest extends TestCase
         ]);
 
         $response = $this->get(route('books.index'));
+
+        $response->assertOk();
+        $response->assertSeeInOrder([
+            '新しい書籍',
+            '古い書籍',
+        ]);
+    }
+
+    public function test_不正な並び順を指定した場合は新しい順に表示される(): void
+    {
+        Book::factory()->create([
+            'title' => '古い書籍',
+            'created_at' => now()->subDays(2),
+        ]);
+
+        Book::factory()->create([
+            'title' => '新しい書籍',
+            'created_at' => now(),
+        ]);
+
+        $response = $this->get('/books?sort=invalid');
 
         $response->assertOk();
         $response->assertSeeInOrder([
